@@ -116,3 +116,5 @@ ggplot(data = data.frame(Feature = names(correlation), Correlation = correlation
      labs(title = "Correlation between numerical features and Sales Price",
           x = "Numerical Features",
           y = "Correlation with SalePrice")
+
+train <- train[,c(names(correlation[abs(correlation) < 0.25]))]
