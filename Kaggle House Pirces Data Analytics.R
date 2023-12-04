@@ -53,8 +53,7 @@ train <- train %>%
      )
 
 
-train[is.na(train)] <- 0
-train <- train[, -which(names(train) %in% c("Alley", "FireplaceQu", "PoolQC", "Fence", "MiscFeature"))]
+train <- train[, -which(names(train) %in% c("Alley", "FireplaceQu", "PoolQC", "Fence", "MiscFeature","LotFrontage"))]
 train <- train[complete.cases(train$MasVnrType), ]
 train <- train[complete.cases(train$BsmtCond), ]
 train <- train[complete.cases(train$BsmtExposure), ]
@@ -62,8 +61,37 @@ train <- train[complete.cases(train$BsmtFinType2), ]
 train <- train[complete.cases(train$Electrical), ]
 train <- train[complete.cases(train$GarageType), ]
 summary(train)
+str(train)
 
-ggplot(train, aes(x = MSZoning, y = SalePrice)) +
+library(ggplot2)
+library(reshape2)
+
+numeric_columns <- train[sapply(train, is.numeric)]
+cor_matrix <- cor(numeric_columns)
+
+ggplot(data = melt(cor_matrix), aes(Var1, Var2, fill = value)) +
+     geom_tile() +
+     scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+     theme_minimal() +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+     labs(title = "Correlation Heatmap")
+
+correlation <- cor(numeric_columns)[,"SalePrice"]
+correlation <- correlation[order(correlation, decreasing = TRUE)]
+
+ggplot(data = data.frame(Feature = names(correlation), Correlation = correlation),
+       aes(x = Feature, y = Correlation)) +
+     geom_bar(stat = "identity", fill = "skyblue") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+     labs(title = "Correlation between numerical features and Sales Price",
+          x = "Numerical Features",
+          y = "Correlation with SalePrice")
+
+train <- train[,c(names(correlation[abs(correlation) < 0.25]),"SalePrice")]
+
+
+ggplot(train, aes(x = LotArea, y = SalePrice)) +
      geom_boxplot() +
      labs(title = "Boxplot of SalePrice by MSSubClass")
 
@@ -91,30 +119,3 @@ ggplot(train, aes(x = SalePrice)) +
      theme_minimal() +
      theme(plot.title = element_text(hjust = 0.5)) 
 
-numeric_columns <- train[sapply(train, is.numeric)]
-library(ggplot2)
-library(reshape2)
-
-numeric_columns <- train[sapply(train, is.numeric)]
-cor_matrix <- cor(numeric_columns)
-
-ggplot(data = melt(cor_matrix), aes(Var1, Var2, fill = value)) +
-     geom_tile() +
-     scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
-     theme_minimal() +
-     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-     labs(title = "Correlation Heatmap")
-
-
-correlation <- cor(numeric_columns)[,"SalePrice"]
-correlation <- correlation[order(correlation, decreasing = TRUE)]
-ggplot(data = data.frame(Feature = names(correlation), Correlation = correlation),
-       aes(x = Feature, y = Correlation)) +
-     geom_bar(stat = "identity", fill = "skyblue") +
-     theme_minimal() +
-     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-     labs(title = "Correlation between numerical features and Sales Price",
-          x = "Numerical Features",
-          y = "Correlation with SalePrice")
-
-train <- train[,c(names(correlation[abs(correlation) < 0.25]))]
