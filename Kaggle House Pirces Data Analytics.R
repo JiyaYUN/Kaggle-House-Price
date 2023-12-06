@@ -24,6 +24,12 @@ validationData = subset(train,!isTraining)
 mean((predict(lm(SalePrice ~ ., data = trainingData), newdata = validationData) - validationData$SalePrice)^2)
 summary(lm(SalePrice ~ MSZoning + LotArea + LandSlope + Neighborhood + OverallQual + OverallCond +
                 YearBuilt + RoofMatl + MasVnrType + ExterQual + BsmtQual + BsmtExposure + BsmtFinType1 +
-                X1stFlrSF + KitchenQual + GarageQual, data = trainingData))
-
-str(trainingData)
+                KitchenQual + GarageQual, data = trainingData))
+summary(lm(SalePrice~OverallQual+OverallCond+BsmtQual+BsmtExposure+BsmtFinType1+
+                KitchenQual+GarageQual,data = trainingData))   
+           
+           BsmtFullBath BedroomAbvGr ))
+PCRound4Vis <- trainingData[c("SalePrice", "MSZoning", "LotArea", "LandSlope", "Neighborhood", "OverallQual", "OverallCond",
+                              "YearBuilt", "RoofMatl", "MasVnrType", "ExterQual", "BsmtQual", "BsmtExposure", "BsmtFinType1",
+                              "X1stFlrSF", "KitchenQual", "GarageQual", "BsmtFullBath", "BedroomAbvGr")]
+write.csv()
