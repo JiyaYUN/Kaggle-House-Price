@@ -1,0 +1,185 @@
+#load data
+remove(list=ls())
+setwd("D:/Simon.UR/Fall A/MGC461 Professional Communication")
+test <- read.csv("test.csv")
+train <- read.csv("train.csv")
+
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(car)
+
+#EDA
+###Sale Price
+ggplot(train, aes(y = SalePrice)) +
+     geom_boxplot() +
+     theme_minimal() +
+     ggtitle("Boxplot of SalePrice") +
+     theme(plot.title = element_text(hjust = 0.5))
+train$log_SalePrice <- log(train$SalePrice)
+p1 <- ggplot(train, aes(x=SalePrice)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample = SalePrice)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of SalePrice")
+p2 <- ggplot(train, aes(x=log_SalePrice)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", linewidth=1) +
+     ggtitle("After log Transformation") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample = log_SalePrice)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(SalePrice)")
+gridExtra::grid.arrange(p1, qq1, p2, qq2, nrow = 2, ncol = 2)
+
+###TotalBsmtSF
+train$log_TotalBsmtSF <- log(train$TotalBsmtSF)
+p1 <- ggplot(train, aes(x=TotalBsmtSF)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation - TotalBsmtSF") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample=TotalBsmtSF)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of TotalBsmtSF") +
+     theme_minimal()
+p2 <- ggplot(train, aes(x=log_TotalBsmtSF)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", linewidth=1) +
+     ggtitle("After Log Transformation - TotalBsmtSF") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample = log_TotalBsmtSF)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(TotalBsmtSF)") +
+     ylab("Quantiles of log(TotalBsmtSF)") +
+     theme_minimal()
+gridExtra::grid.arrange(p1, p2, qq1, qq2, nrow=2, ncol=2)
+
+###X1stFlrSF
+p1 <- ggplot(train, aes(x=X1stFlrSF)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample=X1stFlrSF)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of X1stFlrSF")
+train$log_X1stFlrSF <- log(train$X1stFlrSF)
+p2 <- ggplot(train, aes(x=log_X1stFlrSF)) + 
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", linewidth=1) +
+     ggtitle("After log Transformation") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample=log_X1stFlrSF)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(X1stFlrSF)") +
+     ylab("Quantiles of log(X1stFlrSF)") +
+     theme_minimal()
+gridExtra::grid.arrange(p1, qq1, p2, qq2, nrow=2, ncol=2)
+
+###GrLivArea with NA
+col_to_plot <- train$GrLivArea
+p1 <- ggplot(train, aes(x=GrLivArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample=GrLivArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of GrLivArea")
+train$log_GrLivArea <- log(train$GrLivArea)
+p2 <- ggplot(train, aes(x=log_GrLivArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", size=1) +
+     ggtitle("After log Transformation") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample = log_GrLivArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(GrLivArea)") +
+     ylab("Quantiles of log(GrLivArea)") +
+     theme_minimal()
+gridExtra::grid.arrange(p1, p2, qq1, qq2, nrow=2, ncol=2)
+
+###GarageArea 
+train$log_GarageArea <- log(train$GarageArea)
+p1 <- ggplot(train, aes(x=GarageArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation - GarageArea") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample=GarageArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of GarageArea")
+p2 <- ggplot(train, aes(x=log_GarageArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", linewidth=1) +
+     ggtitle("After log Transformation - GarageArea") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample = log_GarageArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(GarageArea)") +
+     ylab("Quantiles of log(GarageArea)") +
+     theme_minimal()
+gridExtra::grid.arrange(p1, p2, qq1, qq2, nrow = 2, ncol = 2)
+
+###MasVnrArea
+p1 <- ggplot(train, aes(x=MasVnrArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="red", linewidth=1) +
+     ggtitle("Before Transformation") +
+     theme_minimal()
+qq1 <- ggplot(train, aes(sample=MasVnrArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of MasVnrArea")
+train$log_MasVnrArea <- log(train$MasVnrArea)
+p2 <- ggplot(train, aes(x=log_MasVnrArea)) +
+     geom_histogram(aes(y=..density..), bins=30, colour="black", fill="white") +
+     geom_density(colour="blue", linewidth=1) +
+     ggtitle("After log Transformation") +
+     theme_minimal()
+qq2 <- ggplot(train, aes(sample=log_MasVnrArea)) +
+     stat_qq() +
+     stat_qq_line() +
+     ggtitle("Q-Q Plot of log(MasVnrArea)") +
+     ylab("Quantiles of log(MasVnrArea)") +
+     theme_minimal()
+gridExtra::grid.arrange(p1, qq1, p2, qq2, nrow=2, ncol=2)
+
+#data wrangling
+#check percentage of NA
+NAcheck<- data.frame(
+     Num_of_Null = colSums(is.na(train)),
+     Perc_of_Null = round((colSums(is.na(train)) / nrow(train)) * 100, 4)
+)
+rownames(NAcheck) <- colnames(train)
+NAcheck <- NAcheck %>%
+     arrange(desc(Perc_of_Null))
+#delete variables with too much NA
+train <- train[, !colnames(train) %in% c("Alley", "PoolQC", "Fence", "MiscFeature", "FireplaceQu")]
+
+correlations <- cor(train[sapply(train, is.numeric)], use = "complete.obs")
+cor_with_saleprice <- correlations['SalePrice',]
+cor_with_saleprice <- cor_with_saleprice[order(cor_with_saleprice, decreasing = TRUE)]
+
+numeric_cols <- c("GarageYrBlt", "MasVnrArea", "log_MasVnrArea")
+train[numeric_cols] <- lapply(train[numeric_cols], function(x) ifelse(is.na(x), 0, x))
+
+categorical_cols <- c("GarageType", "GarageFinish", "GarageQual", "GarageCond", 
+                      "BsmtExposure", "BsmtFinType2", "BsmtQual", "BsmtCond", 
+                      "BsmtFinType1", "MasVnrType")
+train[categorical_cols] <- lapply(train[categorical_cols], function(x) ifelse(is.na(x), "None", x))
+##cleaning the data except for LotFrontage
